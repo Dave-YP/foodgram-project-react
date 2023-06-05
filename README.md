@@ -12,62 +12,56 @@ Frontend включает в себя компоненты для регистр
 
 ## Технологии:
 
-Django - это фреймворк для создания веб-приложений на языке Python. Он предоставляет множество инструментов и библиотек для создания веб-приложений, включая маршрутизацию, шаблонизацию, аутентификацию и многое другое.
+- Django - это фреймворк для создания веб-приложений на языке Python. Он предоставляет множество инструментов и библиотек для создания веб-приложений, включая маршрутизацию, шаблонизацию, аутентификацию и многое другое.
 
-Django REST framework - это фреймворк для создания REST API на языке Python. Он предоставляет множество инструментов и библиотек для создания REST API, включая поддержку форматов данных, аутентификацию и многое другое.
+- Django REST framework - это фреймворк для создания REST API на языке Python. Он предоставляет множество инструментов и библиотек для создания REST API, включая поддержку форматов данных, аутентификацию и многое другое.
 
-Djoser - это фреймворк для создания REST API для регистрации, аутентификации и управления пользователями. Он предоставляет множество инструментов и библиотек для создания REST API для регистрации, аутентификации и управления пользователями, включая поддержку электронной почты и многое другое.
+- Djoser - это фреймворк для создания REST API для регистрации, аутентификации и управления пользователями. Он предоставляет множество инструментов и библиотек для создания REST API для регистрации, аутентификации и управления пользователями, включая поддержку электронной почты и многое другое.
 
-DRF Spectacular - это фреймворк для создания схемы OpenAPI на основе Django REST framework. Он позволяет автоматически создавать схему OpenAPI для вашего REST API, что упрощает разработку и тестирование вашего API.
+- DRF Spectacular - это фреймворк для создания схемы OpenAPI на основе Django REST framework. Он позволяет автоматически создавать схему OpenAPI для вашего REST API, что упрощает разработку и тестирование вашего API.
 
-Docker - это платформа для разработки, доставки и запуска приложений в контейнерах. Она позволяет упаковывать приложения и их зависимости в контейнеры, которые могут быть запущены на любой платформе, где установлен Docker.
+- Docker - это платформа для разработки, доставки и запуска приложений в контейнерах. Она позволяет упаковывать приложения и их зависимости в контейнеры, которые могут быть запущены на любой платформе, где установлен Docker.
 
-wait-for-it.sh - это скрипт на языке Bash, который ожидает и подключается к серверу перед выполнением других команд. Он может быть полезен при настройке контейнеров Docker, чтобы убедиться, что серверы, на которых они запущены, готовы к работе перед тем, как приложение начнет работать.
+- wait-for-it.sh - это скрипт на языке Bash, который ожидает и подключается к серверу перед выполнением других команд. Он может быть полезен при настройке контейнеров Docker, чтобы убедиться, что серверы, на которых они запущены, готовы к работе перед тем, как приложение начнет работать.
 
 ## Запуск проекта через Docker(localhost):
 
 Для запуска проекта необходимо выполнить следующие шаги:
 
  - [ ] Клонировать репозиторий:
-
-> 
-|[https://github.com/Dave-YP/foodgram-project-react](https://github.com/Dave-YP/foodgram-project-react)|  |
-|-------------------------------------------------|--|
-|                                                 |  |
+```
+git clone https://github.com/Dave-YP/foodgram-project-react
+```
 
  - [ ] Переименовать файл example.env в .env и заполнить его своими
        данными:
-
-    DB_ENGINE=django.db.backends.postgresql
-    
-    DB_NAME=poostgres
-    
-    DB_USER=postgres
-    
-    DB_PASSWORD=postgres
-    
-    DB_HOST=localhost/db
-    
-    DB_PORT=5432
-    
-    SECRET_KEY='secretgenerate'
-    
-    DEBUG = True
+```
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=poostgres
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_HOST=localhost/db
+DB_PORT=5432
+SECRET_KEY='secretgenerate'
+DEBUG = True
+```
 
 > Генератор секретного ключа: infra/secretgenerate.py
 
  - [ ] Запустить Docker:
-
-    docker-compose up -d
+```
+ docker-compose up -d
+```
 
  - [ ] Зарегистрировать суперпользователя:
-
-    docker-compose exec backend python manage.py createsuperuser
+```
+docker-compose exec backend python manage.py createsuperuser
+```
 
  - [ ] Запустить проект:
 
  
-[http://localhost/](http://localhost/)
+http://localhost/
 
  - [ ] После запуска проекта будут доступны следующие ссылки(API):
 
@@ -110,21 +104,15 @@ http://localhost/api/schema/
 
  - Список полезных команд:
  
-
-    docker compose exec backend python manage.py makemigrations recipes
-    
-    docker compose exec backend python manage.py makemigrations users
-    
-    docker compose exec backend python manage.py migrate
-    
-    docker compose exec backend python manage.py createsuperuser
-    
-    docker compose exec backend python manage.py collectstatic --noinput
-    
-    docker compose exec backend python manage.py load_ingredients
-    
-    docker compose exec backend python manage.py load_tags
-
+```
+docker compose exec backend python manage.py makemigrations recipes
+docker compose exec backend python manage.py makemigrations users
+docker compose exec backend python manage.py migrate
+docker compose exec backend python manage.py createsuperuser
+docker compose exec backend python manage.py collectstatic --noinput
+docker compose exec backend python manage.py load_ingredients
+docker compose exec backend python manage.py load_tags
+```
 
  - requirements.txt:
  
