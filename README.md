@@ -105,6 +105,7 @@ http://localhost/api/schema/
  - Список полезных команд:
  
 ```
+docker compose up -d
 docker compose exec backend python manage.py makemigrations recipes
 docker compose exec backend python manage.py makemigrations users
 docker compose exec backend python manage.py migrate
