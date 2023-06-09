@@ -28,10 +28,12 @@ from users.models import Subscription
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from .serializers import UserProfileSerializer, IngredientSerializer
-from .serializers import RecipeShortSerializer, RecipeWriteSerializer
-from .serializers import RecipeReadSerializer, TagSerializer
-from .serializers import SubscriptionSerializer
+from .user_serializers import UserProfileSerializer
+from .recipe_serializers import RecipeWriteSerializer, RecipeReadSerializer
+from .recipe_serializers import RecipeShortSerializer
+from .tag_serializers import TagSerializer
+from .subscription_serializers import SubscriptionSerializer
+from .ingredient_serializers import IngredientSerializer
 
 User = get_user_model()
 
