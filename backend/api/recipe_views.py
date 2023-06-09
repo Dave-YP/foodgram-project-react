@@ -11,157 +11,24 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, SAFE_METHODS, IsAuthenticated
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from djoser.views import UserViewSet
-
+from rest_framework.viewsets import ModelViewSet
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
-from recipes.models import Favourite, Ingredient
+from recipes.models import Favourite
 from recipes.models import IngredientInRecipe, Recipe
-from recipes.models import ShoppingCart, Tag
-from users.models import Subscription
-from .filters import IngredientFilter, RecipeFilter
+from recipes.models import ShoppingCart
+from .filters import RecipeFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from .user_serializers import UserProfileSerializer
 from .recipe_serializers import RecipeWriteSerializer, RecipeReadSerializer
 from .recipe_serializers import RecipeShortSerializer
-from .tag_serializers import TagSerializer
-from .subscription_serializers import SubscriptionSerializer
-from .ingredient_serializers import IngredientSerializer
 
 User = get_user_model()
-
-
-class UserProfileViewSet(UserViewSet):
-    """"
-    Класс UserProfileViewSet для работы с профилями пользователей.
-    Добавляет дополнительные функции для управления подписками.
-
-    Методы:
-        subscribe: обрабатывает POST и DELETE запросы
-        для создания и удаления подписок на авторов.
-        manage_subscription: метод для создания и удаления подписок.
-        subscriptions: возвращает список авторов,
-        на которых подписан пользователь.
-
-    Эндпоинты:
-        POST /api/users/{id}/subscribe/
-        DELETE /api/users/{id}/subscribe/
-        GET /api/users/subscriptions/
-
-    """
-
-    queryset = User.objects.all()
-    serializer_class = UserProfileSerializer
-    permission_classes = (AllowAny,)
-    pagination_class = LimitPageNumberPagination
-
-    @action(
-        detail=True,
-        methods=['post', 'delete'],
-        permission_classes=[IsAuthenticated]
-    )
-    def subscribe(self, request, **kwargs):
-        current_user = request.user
-        target_author_id = self.kwargs.get('id')
-        target_author = get_object_or_404(User, id=target_author_id)
-
-        if request.method == 'POST':
-            return self.manage_subscription(
-                request,
-                current_user,
-                target_author,
-                action_type='create'
-            )
-
-        if request.method == 'DELETE':
-            return self.manage_subscription(
-                request,
-                current_user,
-                target_author,
-                action_type='delete'
-            )
-
-    def manage_subscription(
-            self,
-            request,
-            current_user,
-            target_author,
-            action_type
-    ):
-        if action_type == 'create':
-            serializer = SubscriptionSerializer(
-                target_author,
-                data=request.data,
-                context={"request": request}
-            )
-            serializer.is_valid(raise_exception=True)
-            Subscription.objects.create(
-                user=current_user,
-                author=target_author
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        elif action_type == 'delete':
-            subscription_instance = get_object_or_404(
-                Subscription,
-                user=current_user,
-                author=target_author
-            )
-            subscription_instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @action(
-        detail=False,
-        permission_classes=[IsAuthenticated]
-    )
-    def subscriptions(self, request):
-        current_user = request.user
-        queryset = User.objects.filter(subscribing__user=current_user)
-        paginated_queryset = self.paginate_queryset(queryset)
-        serializer = SubscriptionSerializer(
-            paginated_queryset,
-            many=True,
-            context={'request': request}
-        )
-        return self.get_paginated_response(serializer.data)
-
-
-class IngredientViewSet(ReadOnlyModelViewSet):
-    """
-    Возвращает список ингредиентов по названию или ингредиента по id.
-
-    Эндпоинты:
-        GET /api/ingredients/
-        GET /api/ingredients/{id}/
-
-    """
-
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = IngredientFilter
-
-
-class TagViewSet(ReadOnlyModelViewSet):
-    """
-    Возвращает список всех тегов или тега по id.
-
-    Эндпоинты:
-        GET /api/tags/
-        GET /api/tags/{id}/
-
-    """
-
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    permission_classes = (IsAdminOrReadOnly,)
 
 
 class RecipeViewSet(ModelViewSet):
