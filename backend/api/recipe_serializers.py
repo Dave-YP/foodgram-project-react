@@ -1,6 +1,7 @@
 from typing import Dict, List
 from django.db.models import F, QuerySet
 from django.shortcuts import get_object_or_404
+from collections import Counter
 
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
@@ -30,6 +31,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         is_in_shopping_cart: флаг, указывающий, добавлен ли рецепт в список.
 
     """
+
     ingredients = SerializerMethodField()
     tags = TagSerializer(many=True, read_only=True, allow_empty=False)
     author = UserProfileSerializer(read_only=True)
@@ -98,6 +100,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         cooking_time: время приготовления рецепта в минутах.
 
     """
+
     ingredients = IngredientInRecipeSerializer(
         many=True,
         required=True,
@@ -119,13 +122,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                   'tags', 'image', 'name',
                   'text', 'cooking_time',)
 
-    def validate(self, data):
-        tags = data.get('tags')
-        ingredients = data.get('ingredients')
-
-        if len(tags) != len(set(tags)):
-            raise serializers.ValidationError({'tags': ['Тег повторяется']})
-
+    def validate_ingredients(self, ingredients):
         ingredients_set = set()
         for item in ingredients:
             ingredient = get_object_or_404(Ingredient, id=item['id'])
@@ -136,7 +133,24 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                 )
 
             ingredients_set.add(ingredient.id)
+        return ingredients
 
+    def validate_tags(self, tags):
+        tag_counter = Counter(tags)
+        for tag, count in tag_counter.items():
+            if count > 1:
+                raise serializers.ValidationError(
+                    {'tags': [f'Тег {tag} повторяется']}
+                )
+        return tags
+
+    def validate(self, data):
+        data['ingredients'] = self.validate_ingredients(
+            data.get('ingredients')
+        )
+        data['tags'] = self.validate_tags(
+            data.get('tags')
+        )
         return data
 
     def create_ingredients_amounts(
