@@ -10,6 +10,7 @@ from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from .ingredient_serializers import IngredientInRecipeSerializer
 from .tag_serializers import TagSerializer
 from .user_serializers import UserProfileSerializer
+from recipes.models import Favourite, ShoppingCart
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
@@ -29,10 +30,9 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         is_in_shopping_cart: флаг, указывающий, добавлен ли рецепт в список.
 
     """
-
+    ingredients = SerializerMethodField()
     tags = TagSerializer(many=True, read_only=True, allow_empty=False)
     author = UserProfileSerializer(read_only=True)
-    ingredients = SerializerMethodField()
     is_favorited = SerializerMethodField(read_only=True)
     is_in_shopping_cart = SerializerMethodField(read_only=True)
     image = Base64ImageField()
@@ -98,7 +98,11 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         cooking_time: время приготовления рецепта в минутах.
 
     """
-
+    ingredients = IngredientInRecipeSerializer(
+        many=True,
+        required=True,
+        allow_empty=False
+    )
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True,
@@ -107,11 +111,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     )
 
     author = UserProfileSerializer(read_only=True)
-    ingredients = IngredientInRecipeSerializer(
-        many=True,
-        required=True,
-        allow_empty=False
-    )
     image = Base64ImageField()
 
     class Meta:
@@ -160,20 +159,17 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             ingredients: List[Dict],
             recipe: Recipe
     ) -> None:
+        IngredientInRecipe.objects.filter(recipe=recipe).delete()
+
         ingredient_objects = [
             IngredientInRecipe(
-                id=ingredient_in_recipe.id,
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
                 recipe=recipe,
                 amount=ingredient['amount']
             )
-            for ingredient, ingredient_in_recipe in
-            zip(ingredients, recipe.ingredients.all())
+            for ingredient in ingredients
         ]
-        IngredientInRecipe.objects.bulk_update(
-            ingredient_objects,
-            ['ingredient', 'amount']
-        )
+        IngredientInRecipe.objects.bulk_create(ingredient_objects)
 
     def create(self, validated_data: Dict) -> Recipe:
         tags: List[int] = validated_data.pop('tags')
@@ -200,3 +196,46 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         context = {'request': request}
         return RecipeReadSerializer(instance, context=context).data
+
+
+class FavouriteSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Favourite.
+
+    """
+
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    recipe = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+
+    class Meta:
+        model = Favourite
+        fields = ('user', 'recipe')
+
+    def validate(self, data):
+        user = data['user']
+        recipe = data['recipe']
+        if Favourite.objects.filter(user=user, recipe=recipe).exists():
+            raise serializers.ValidationError('Рецепт уже в избранном.')
+        return data
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели ShoppingCart.
+
+    """
+
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    recipe = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+
+    class Meta:
+        model = ShoppingCart
+        fields = ('user', 'recipe')
+
+    def validate(self, data):
+        user = data['user']
+        recipe = data['recipe']
+        if ShoppingCart.objects.filter(user=user, recipe=recipe).exists():
+            raise serializers.ValidationError(
+                'Рецепт уже присутствует в списке.')
+        return data

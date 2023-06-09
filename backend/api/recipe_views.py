@@ -5,7 +5,6 @@ import os
 
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
 
@@ -26,6 +25,7 @@ from .filters import RecipeFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .recipe_serializers import RecipeWriteSerializer, RecipeReadSerializer
+from .recipe_serializers import FavouriteSerializer, ShoppingCartSerializer
 from .recipe_serializers import RecipeShortSerializer
 
 User = get_user_model()
@@ -63,8 +63,7 @@ class RecipeViewSet(ModelViewSet):
     def favorite(self, request, pk):
         if request.method == 'POST':
             return self.add_to_favorite(request.user, pk)
-        else:
-            return self.delete_from_favorite(request.user, pk)
+        return self.delete_from_favorite(request.user, pk)
 
     @action(
         detail=True,
@@ -83,8 +82,7 @@ class RecipeViewSet(ModelViewSet):
 
         if request.method == 'POST':
             return self.add_to_shopping_cart(request.user, pk)
-        else:
-            return self.delete_from_shopping_cart(request.user, pk)
+        return self.delete_from_shopping_cart(request.user, pk)
 
     def add_to_favorite(self, user, pk):
         """
@@ -95,12 +93,16 @@ class RecipeViewSet(ModelViewSet):
 
         """
 
-        if Favourite.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({'errors': ['Рецепт уже уже в избранном.']})
-        recipe = get_object_or_404(Recipe, id=pk)
-        Favourite.objects.create(user=user, recipe=recipe)
-        serializer = RecipeShortSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = FavouriteSerializer(
+            data={'user': user.id, 'recipe': pk},
+            context={'request': self.request}
+        )
+
+        serializer.is_valid(raise_exception=True)
+        favourite = serializer.save()
+        recipe = favourite.recipe
+        recipe_serializer = RecipeShortSerializer(recipe)
+        return Response(recipe_serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_from_favorite(self, user, pk):
         """
@@ -112,10 +114,8 @@ class RecipeViewSet(ModelViewSet):
         """
 
         obj = Favourite.objects.filter(user=user, recipe__id=pk)
-        if obj.exists():
-            obj.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({'errors': ['Рецепт не найден в избранном.']})
+        obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def add_to_shopping_cart(self, user, pk):
         """
@@ -126,12 +126,15 @@ class RecipeViewSet(ModelViewSet):
 
         """
 
-        if ShoppingCart.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({'errors': ['Рецепт уже присутствует в списке.']})
-        recipe = get_object_or_404(Recipe, id=pk)
-        ShoppingCart.objects.create(user=user, recipe=recipe)
-        serializer = RecipeShortSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = ShoppingCartSerializer(
+            data={'user': user.id, 'recipe': pk},
+            context={'request': self.request}
+        )
+        serializer.is_valid(raise_exception=True)
+        shopping_cart = serializer.save()
+        recipe = shopping_cart.recipe
+        recipe_serializer = RecipeShortSerializer(recipe)
+        return Response(recipe_serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_from_shopping_cart(self, user, pk):
         """
@@ -143,12 +146,8 @@ class RecipeViewSet(ModelViewSet):
         """
 
         obj = ShoppingCart.objects.filter(user=user, recipe__id=pk)
-        if obj.exists():
-            obj.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(
-            {'errors': ['Пользователь не имеет рецептов в списке.']}
-        )
+        obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=False,
