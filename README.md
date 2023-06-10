@@ -1,4 +1,4 @@
-[![Dave-YP-Foodgram workflow](https://github.com/Dave-YP/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/Dave-YP/foodgram-project-react/actions/workflows/main.yml
+[![Dave-YP-Foodgram workflow](https://github.com/Dave-YP/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/Dave-YP/foodgram-project-react/actions/workflows/main.yml)
 # Foodgram
 
 ## Описание проекта:
