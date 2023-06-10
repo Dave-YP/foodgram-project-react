@@ -4,9 +4,9 @@ from django.contrib.auth import get_user_model
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from recipes.models import Ingredient
-from .filters import IngredientFilter
-from .permissions import IsAdminOrReadOnly
-from .ingredient_serializers import IngredientSerializer
+from api.filters import IngredientFilter
+from api.permissions import IsAdminOrReadOnly
+from api.serializers.ingredient_serializers import IngredientSerializer
 
 User = get_user_model()
 

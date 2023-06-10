@@ -21,12 +21,14 @@ from reportlab.pdfgen import canvas
 from recipes.models import Favourite
 from recipes.models import IngredientInRecipe, Recipe
 from recipes.models import ShoppingCart
-from .filters import RecipeFilter
-from .pagination import LimitPageNumberPagination
-from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from .recipe_serializers import RecipeWriteSerializer, RecipeReadSerializer
-from .recipe_serializers import FavouriteSerializer, ShoppingCartSerializer
-from .recipe_serializers import RecipeShortSerializer
+from api.filters import RecipeFilter
+from api.pagination import LimitPageNumberPagination
+from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
+from api.serializers.recipe_serializers import RecipeWriteSerializer
+from api.serializers.recipe_serializers import RecipeReadSerializer
+from api.serializers.recipe_serializers import FavouriteSerializer
+from api.serializers.recipe_serializers import ShoppingCartSerializer
+from api.serializers.recipe_serializers import RecipeShortSerializer
 
 User = get_user_model()
 

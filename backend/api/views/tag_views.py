@@ -3,8 +3,8 @@ from django.contrib.auth import get_user_model
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from recipes.models import Tag
-from .permissions import IsAdminOrReadOnly
-from .tag_serializers import TagSerializer
+from api.permissions import IsAdminOrReadOnly
+from api.serializers.tag_serializers import TagSerializer
 
 User = get_user_model()
 

@@ -8,9 +8,9 @@ from rest_framework.response import Response
 from djoser.views import UserViewSet
 
 from users.models import Subscription
-from .pagination import LimitPageNumberPagination
-from .user_serializers import UserProfileSerializer
-from .subscription_serializers import SubscriptionSerializer
+from api.pagination import LimitPageNumberPagination
+from api.serializers.user_serializers import UserProfileSerializer
+from api.serializers.subscription_serializers import SubscriptionSerializer
 
 User = get_user_model()
 
