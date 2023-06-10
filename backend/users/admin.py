@@ -12,7 +12,7 @@ class UserAdmin(UserAdmin):
     """
 
     list_display = (
-        'email','id',
+        'email', 'id',
         'username',
         'first_name',
         'last_name',
