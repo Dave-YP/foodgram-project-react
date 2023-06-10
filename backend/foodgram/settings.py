@@ -15,8 +15,16 @@ if not SECRET_KEY:
 
 DEBUG = os.getenv('DEBUG', False)
 
-ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://localhost']
+ALLOWED_HOSTS = [
+    'localhost',
+    '158.160.0.236'
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost',
+    'http://158.160.0.236',
+    'https://158.160.0.236'
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
