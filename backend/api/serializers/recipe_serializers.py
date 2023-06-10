@@ -1,17 +1,17 @@
+from collections import Counter
 from typing import Dict, List
+
 from django.db.models import F, QuerySet
 from django.shortcuts import get_object_or_404
-from collections import Counter
-
 from drf_extra_fields.fields import Base64ImageField
+from recipes.models import (Favourite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
-from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from .ingredient_serializers import IngredientInRecipeSerializer
 from .tag_serializers import TagSerializer
 from .user_serializers import UserProfileSerializer
-from recipes.models import Favourite, ShoppingCart
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):

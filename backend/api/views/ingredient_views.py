@@ -1,12 +1,10 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from django.contrib.auth import get_user_model
-
-from rest_framework.viewsets import ReadOnlyModelViewSet
-
-from recipes.models import Ingredient
 from api.filters import IngredientFilter
 from api.permissions import IsAdminOrReadOnly
 from api.serializers.ingredient_serializers import IngredientSerializer
+from django.contrib.auth import get_user_model
+from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import Ingredient
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 User = get_user_model()
 

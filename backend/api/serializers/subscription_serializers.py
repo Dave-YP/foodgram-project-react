@@ -1,12 +1,13 @@
 from typing import Dict
-from django.contrib.auth import get_user_model
 
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
-
 from users.models import Subscription
+
 from .recipe_serializers import RecipeShortSerializer
 from .user_serializers import UserProfileSerializer
+
 User = get_user_model()
 
 

@@ -1,34 +1,30 @@
-from datetime import datetime
-from django.conf import settings
-from io import BytesIO
 import os
+from datetime import datetime
+from io import BytesIO
 
+from api.filters import RecipeFilter
+from api.pagination import LimitPageNumberPagination
+from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
+from api.serializers.recipe_serializers import (FavouriteSerializer,
+                                                RecipeReadSerializer,
+                                                RecipeShortSerializer,
+                                                RecipeWriteSerializer,
+                                                ShoppingCartSerializer)
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from django.contrib.auth import get_user_model
-
+from recipes.models import Favourite, IngredientInRecipe, Recipe, ShoppingCart
+from reportlab.lib.pagesizes import landscape, letter
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from reportlab.lib.pagesizes import letter, landscape
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
-
-from recipes.models import Favourite
-from recipes.models import IngredientInRecipe, Recipe
-from recipes.models import ShoppingCart
-from api.filters import RecipeFilter
-from api.pagination import LimitPageNumberPagination
-from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from api.serializers.recipe_serializers import RecipeWriteSerializer
-from api.serializers.recipe_serializers import RecipeReadSerializer
-from api.serializers.recipe_serializers import FavouriteSerializer
-from api.serializers.recipe_serializers import ShoppingCartSerializer
-from api.serializers.recipe_serializers import RecipeShortSerializer
 
 User = get_user_model()
 

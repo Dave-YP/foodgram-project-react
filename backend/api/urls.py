@@ -1,10 +1,9 @@
-from django.urls import include, path
-from rest_framework import routers
-
 from api.views.ingredient_views import IngredientViewSet
 from api.views.recipe_views import RecipeViewSet
 from api.views.tag_views import TagViewSet
 from api.views.user_views import UserProfileViewSet
+from django.urls import include, path
+from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register('ingredients', IngredientViewSet, basename='ingredient')
