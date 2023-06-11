@@ -144,15 +144,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                 )
         return tags
 
-    def validate(self, data):
-        data['ingredients'] = self.validate_ingredients(
-            data.get('ingredients')
-        )
-        data['tags'] = self.validate_tags(
-            data.get('tags')
-        )
-        return data
-
     def create_ingredients_amounts(
             self,
             ingredients: List[Dict],
