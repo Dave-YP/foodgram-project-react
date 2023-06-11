@@ -2,6 +2,21 @@ import os
 from datetime import datetime
 from io import BytesIO
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db.models import Sum
+from django.http import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+from reportlab.lib.pagesizes import landscape, letter
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
+
 from api.filters import RecipeFilter
 from api.pagination import LimitPageNumberPagination
 from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
@@ -10,21 +25,7 @@ from api.serializers.recipe_serializers import (FavouriteSerializer,
                                                 RecipeShortSerializer,
                                                 RecipeWriteSerializer,
                                                 ShoppingCartSerializer)
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.db.models import Sum
-from django.http import HttpResponse
-from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import Favourite, IngredientInRecipe, Recipe, ShoppingCart
-from reportlab.lib.pagesizes import landscape, letter
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
-from rest_framework import status
-from rest_framework.decorators import action
-from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
 User = get_user_model()
 
