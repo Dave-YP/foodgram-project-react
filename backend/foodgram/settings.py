@@ -17,13 +17,15 @@ DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = [
     'localhost',
-    '158.160.0.236'
+    '158.160.0.236',
+    'backend'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
     'http://158.160.0.236',
-    'https://158.160.0.236'
+    'https://158.160.0.236',
+    'backend'
 ]
 
 INSTALLED_APPS = [
