@@ -140,8 +140,13 @@ class Recipe(models.Model):
         verbose_name='Загрузить фото',
         upload_to='recipes/'
     )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата публикации',
+    )
 
     class Meta:
+        oordering = ('-pub_date',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
