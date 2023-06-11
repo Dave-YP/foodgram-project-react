@@ -25,7 +25,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
     'http://158.160.0.236',
     'https://158.160.0.236',
-    'backend'
+    'http://backend'
 ]
 
 INSTALLED_APPS = [
