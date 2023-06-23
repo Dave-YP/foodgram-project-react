@@ -30,6 +30,7 @@ const RecipeEdit = ({ onItemDelete }) => {
   const [ showIngredients, setShowIngredients ] = useState(false)
   const [ loading, setLoading ] = useState(true)
   const history = useHistory()
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(_ => {
     if (ingredientValue.name === '') {
@@ -105,7 +106,7 @@ const RecipeEdit = ({ onItemDelete }) => {
     <Container>
       <MetaTags>
         <title>Редактирование рецепта</title>
-        <meta name="description" content="Продуктовый помощник - Редактирование рецепта" />
+        <meta name="description" content="Foodgram Plus - Редактирование рецепта" />
         <meta property="og:title" content="Редактирование рецепта" />
       </MetaTags>
       <Title title='Редактирование рецепта' />
@@ -190,19 +191,31 @@ const RecipeEdit = ({ onItemDelete }) => {
             />
             <div className={styles.ingredientsAmountInputContainer}>
               <Input
+                type="number"
+                min="1"
+                step="1"
+                pattern="\d+"
                 className={styles.ingredientsAmountInput}
                 inputClassName={styles.ingredientsAmountValue}
                 onChange={e => {
-                  const value = e.target.value
+                  let value = e.target.value;
+                  if (value <= 0) {
+                    value = 1;
+                  }
                   setIngredientValue({
                     ...ingredientValue,
                     amount: value
-                  })
+                  });
                 }}
                 value={ingredientValue.amount}
               />
               {ingredientValue.measurement_unit !== '' && <div className={styles.measurementUnit}>{ingredientValue.measurement_unit}</div>}
             </div>
+            {showAlert && (
+              <div className="alert">
+                Введите количество!
+              </div>
+            )}
             {showIngredients && ingredients.length > 0 && <IngredientsSearch
               ingredients={ingredients}
               onClick={({ id, name, measurement_unit }) => {
@@ -232,8 +245,12 @@ const RecipeEdit = ({ onItemDelete }) => {
           <div
             className={styles.ingredientAdd}
             onClick={_ => {
-              if (ingredientValue.amount === '' || ingredientValue.name === '') { return }
-              setRecipeIngredients([...recipeIngredients, ingredientValue])
+              if (ingredientValue.amount === '' || ingredientValue.name === '' || !ingredientValue.id || isNaN(ingredientValue.amount)) {
+                setShowAlert(true);
+                return;
+              }
+              setShowAlert(false);
+              setRecipeIngredients([...recipeIngredients, ingredientValue]);
               setIngredientValue({
                 name: '',
                 id: null,

@@ -3,6 +3,8 @@ version: '3.8'
 services:
   db:
     image: postgres:15.0-alpine
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -10,8 +12,8 @@ services:
     restart: on-failure
 
   backend:
-    # build: ../backend
-    image: carkazm/foodgram_backend:latest
+    build: ../backend
+    # image: carkazm/foodgram_backend:latest
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
@@ -23,8 +25,8 @@ services:
     restart: on-failure
 
   frontend:
-    # build: ../frontend
-    image: carkazm/foodgram_frontend:latest
+    build: ../frontend
+    # image: carkazm/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
 
@@ -47,3 +49,4 @@ volumes:
   static_value:
   media_value:
   redoc:
+  
