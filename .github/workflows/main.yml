@@ -66,34 +66,33 @@ jobs:
           context: ./frontend/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
-"""
-  deploy:
-    runs-on: ubuntu-latest
-    needs: 
-      - build_and_push_backend_to_docker_hub
-      - build_and_push_frontend_to_docker_hub
-    steps:
-      - name: executing remote ssh commands to deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE }}
-          script: |
-            sudo systemctl stop nginx
-            sudo docker-compose stop
-            sudo docker compose rm backend
-            sudo docker compose rm frontend
-            sudo docker pull carkazm/foodgram_backend:latest
-            sudo docker pull carkazm/foodgram_frontend:latest
-            touch .env
-            sudo echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-            echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
-            echo DB_NAME=${{ secrets.DB_NAME }} >> .env
-            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
-            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-            echo DB_HOST=${{ secrets.DB_HOST }} >> .env
-            echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-            sudo docker-compose up -d
-"""
+
+# deploy:
+#   runs-on: ubuntu-latest
+#   needs: 
+#     - build_and_push_backend_to_docker_hub
+#     - build_and_push_frontend_to_docker_hub
+#   steps:
+#     - name: executing remote ssh commands to deploy
+#       uses: appleboy/ssh-action@master
+#       with:
+#         host: ${{ secrets.HOST }}
+#         username: ${{ secrets.USER }}
+#         key: ${{ secrets.SSH_KEY }}
+#         passphrase: ${{ secrets.PASSPHRASE }}
+#         script: |
+#           sudo systemctl stop nginx
+#           sudo docker-compose stop
+#           sudo docker compose rm backend
+#           sudo docker compose rm frontend
+#           sudo docker pull carkazm/foodgram_backend:latest
+#           sudo docker pull carkazm/foodgram_frontend:latest
+#           touch.env
+#           sudo echo SECRET_KEY=${{ secrets.SECRET_KEY }} >>.env
+#           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >>.env
+#           echo DB_NAME=${{ secrets.DB_NAME }} >>.env
+#           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >>.env
+#           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >>.env
+#           echo DB_HOST=${{ secrets.DB_HOST }} >>.env
+#           echo DB_PORT=${{ secrets.DB_PORT }} >>.env
+#           sudo docker-compose up -d
